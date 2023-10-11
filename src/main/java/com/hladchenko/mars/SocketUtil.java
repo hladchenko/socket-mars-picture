@@ -1,5 +1,7 @@
 package com.hladchenko.mars;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -20,7 +22,7 @@ public class SocketUtil {
     }
 
     @SneakyThrows
-    public static void sendSSLRequest(String host, String path) {
+    public static JsonNode sendSSLRequest(String host, String path) {
         Socket socket = getSocket(host, 443);
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
         PrintWriter printWriter = new PrintWriter(outputStreamWriter);
@@ -33,11 +35,11 @@ public class SocketUtil {
         printWriter.write(request);
         printWriter.flush();
 
-//        JSONObject jsonResponse = getJsonResponse();
-        printResponse();
+        JsonNode jsonNode = getJsonResponse();
+//        printResponse();
         closeSocketConnection();
 
-//        return jsonResponse;
+        return jsonNode;
     }
 
     @SneakyThrows
@@ -49,17 +51,20 @@ public class SocketUtil {
     }
 
     @SneakyThrows
-    private static void getJsonResponse() {
+    private static JsonNode getJsonResponse() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
         InputStream inputStream = socket.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         List<String> list = bufferedReader.lines().toList();
 
-//        if (list.indexOf("") + 1 <= list.size()) {
-//            jsonObject = new JSONObject(list.get(list.indexOf("") + 1));
-//        }
-//
-//        return jsonObject;
+        if (list.indexOf("") + 1 <= list.size()) {
+            jsonNode = objectMapper.readTree(list.get(list.indexOf("") + 1));
+        }
+
+        return jsonNode;
     }
 
     @SneakyThrows
