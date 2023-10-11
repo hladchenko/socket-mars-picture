@@ -35,8 +35,7 @@ public class SocketUtil {
         printWriter.write(request);
         printWriter.flush();
 
-        JsonNode jsonNode = getJsonResponse();
-//        printResponse();
+        JsonNode jsonNode = getResponse();
         closeSocketConnection();
 
         return jsonNode;
@@ -51,7 +50,7 @@ public class SocketUtil {
     }
 
     @SneakyThrows
-    private static JsonNode getJsonResponse() {
+    private static JsonNode getResponse() {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = null;
 
@@ -61,7 +60,7 @@ public class SocketUtil {
         List<String> list = bufferedReader.lines().toList();
 
         if (list.indexOf("") + 1 <= list.size()) {
-            jsonNode = objectMapper.readTree(list.get(list.indexOf("") + 1));
+            jsonNode = objectMapper.readTree(list.get(list.indexOf("") + 1)).get("photos");
         }
 
         return jsonNode;

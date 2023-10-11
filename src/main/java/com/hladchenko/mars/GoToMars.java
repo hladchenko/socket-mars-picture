@@ -2,6 +2,10 @@ package com.hladchenko.mars;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class GoToMars {
 
     private static final String token = "";
@@ -12,6 +16,16 @@ public class GoToMars {
 
         JsonNode jsonNode = SocketUtil.sendSSLRequest(host, path);
 
-        System.out.println(jsonNode);
+        Iterator<JsonNode> elements = jsonNode.elements();
+
+        List<String> list = new ArrayList<>();
+
+        while (elements.hasNext()) {
+            JsonNode element = elements.next();
+            String imageURL = element.get("img_src").asText();
+            list.add(imageURL);
+        }
+
+        System.out.println(list);
     }
 }
