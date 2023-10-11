@@ -15,10 +15,8 @@ public class SocketUtil {
 
     @SneakyThrows
     public static Socket getSocket(String host, int port) {
-        if (socket == null) {
             socket = SSLSocketFactory.getDefault().createSocket(host, port);
-        }
-        return socket;
+            return socket;
     }
 
     @SneakyThrows
@@ -42,11 +40,39 @@ public class SocketUtil {
     }
 
     @SneakyThrows
+    public static String sendRequestAndGetHeaders(String host, String path) {
+        Socket socket = getSocket(host, 443);
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
+        PrintWriter printWriter = new PrintWriter(outputStreamWriter);
+        String request = """
+                HEAD %s HTTP/1.1
+                Host: %s
+                Connection: close
+                                    
+                """.formatted(path, host);
+        printWriter.write(request);
+        printWriter.flush();
+
+        String firstHeadLine = getFirstHeadLine();
+        closeSocketConnection();
+
+        return firstHeadLine;
+    }
+
+    @SneakyThrows
     private static void printResponse() {
         InputStream inputStream = socket.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         bufferedReader.lines().forEach(System.out::println);
+    }
+
+    @SneakyThrows
+    private static String getFirstHeadLine() {
+        InputStream inputStream = socket.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        return bufferedReader.readLine();
     }
 
     @SneakyThrows
