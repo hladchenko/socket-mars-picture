@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class GoToMars {
 
-    private static final String token = "vitG5CeayGcf74hW1oOr2KQcEZvoNx2useVarV8u";
+    private static final String token = "";
 
     public static void main(String[] args) {
         String host = "api.nasa.gov";
