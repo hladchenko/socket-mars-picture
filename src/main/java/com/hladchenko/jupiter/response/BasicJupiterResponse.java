@@ -54,6 +54,16 @@ public class BasicJupiterResponse implements JupiterResponse {
         return objectMapper.readTree(this.body.get(0));
     }
 
+    @Override
+    public int getContentLength() {
+        return Integer.parseInt(this.headers.get("Content-Length"));
+    }
+
+    @Override
+    public String getLocation() {
+        return this.headers.get("Location");
+    }
+
     private void parseResponse(List<String> lines) {
         if (!lines.isEmpty()) {
 

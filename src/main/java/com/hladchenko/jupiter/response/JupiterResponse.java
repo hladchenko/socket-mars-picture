@@ -16,4 +16,8 @@ public interface JupiterResponse {
     public List<String> getBody();
 
     public JsonNode getJsonBody();
+
+    public int getContentLength();
+
+    public String getLocation();
 }
