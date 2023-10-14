@@ -10,9 +10,7 @@ import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
 import java.net.Socket;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class JupiterClient implements Jupiter {
 
@@ -24,24 +22,22 @@ public class JupiterClient implements Jupiter {
         return SSLSocketFactory.getDefault().createSocket(host, 443);
     }
 
-    @SneakyThrows
     @Override
     public JupiterResponse get(String host) {
-        JupiterRequest request = new BasicJupiterRequest(new URI(host));
-        JupiterResponse response = null;
-        try (Socket socket = getSocket(request.getHost())) {
-            response = sendRequest(GET, socket, request);
-        }
-        return response;
+        return sendRequest(GET, host);
+    }
+
+    @Override
+    public JupiterResponse head(String host) {
+        return sendRequest(HEAD, host);
     }
 
     @SneakyThrows
-    @Override
-    public JupiterResponse head(String host) {
+    private JupiterResponse sendRequest(String method, String host) {
         JupiterRequest request = new BasicJupiterRequest(new URI(host));
         JupiterResponse response = null;
         try (Socket socket = getSocket(request.getHost())) {
-            response = sendRequest(HEAD, socket, request);
+            response = sendRequest(method, socket, request);
         }
         return response;
     }
