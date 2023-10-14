@@ -20,4 +20,6 @@ public interface JupiterResponse {
     public int getContentLength();
 
     public String getLocation();
+
+    public String getRequestURL();
 }

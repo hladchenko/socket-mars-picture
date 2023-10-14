@@ -13,7 +13,6 @@ public class GoToMars {
     private static final String TOKEN = "";
     private static final String PATH = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=15&api_key=%s".formatted(TOKEN);
 
-
     public static void main(String[] args) {
 
         JupiterResponse response = jupiter.get(PATH);
@@ -28,7 +27,7 @@ public class GoToMars {
                 .map(GoToMars::check301)
                 .max(Comparator.comparing(JupiterResponse::getContentLength));
 
-        max.ifPresent(jupiterResponse -> System.out.println(jupiterResponse.getRequest().getURI().toString()));
+        max.ifPresent(jupiterResponse -> System.out.println(jupiterResponse.getRequestURL()));
     }
 
     private static List<String> getImageSourceList(JsonNode node) {

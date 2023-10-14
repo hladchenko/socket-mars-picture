@@ -64,6 +64,11 @@ public class BasicJupiterResponse implements JupiterResponse {
         return this.headers.get("Location");
     }
 
+    @Override
+    public String getRequestURL() {
+        return this.request.getURI().toString();
+    }
+
     private void parseResponse(List<String> lines) {
         if (!lines.isEmpty()) {
 
