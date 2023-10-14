@@ -1,6 +1,9 @@
 package com.hladchenko.jupiter.response;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hladchenko.jupiter.request.JupiterRequest;
+import lombok.SneakyThrows;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +44,14 @@ public class BasicJupiterResponse implements JupiterResponse {
     @Override
     public List<String> getBody() {
         return this.body;
+    }
+
+    @SneakyThrows
+    @Override
+    public JsonNode getJsonBody() {
+        if (this.body == null || this.body.isEmpty()) return null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readTree(this.body.get(0));
     }
 
     private void parseResponse(List<String> lines) {
