@@ -15,46 +15,50 @@ public class SocketUtil {
 
     @SneakyThrows
     public static Socket getSocket(String host, int port) {
-            socket = SSLSocketFactory.getDefault().createSocket(host, port);
-            return socket;
+        return SSLSocketFactory.getDefault().createSocket(host, port);
     }
 
     @SneakyThrows
     public static JsonNode sendSSLRequest(String host, String path) {
-        Socket socket = getSocket(host, 443);
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
-        PrintWriter printWriter = new PrintWriter(outputStreamWriter);
-        String request = """
-                GET %s HTTP/1.1
-                Host: %s
-                Connection: close
-                                    
-                """.formatted(path, host);
-        printWriter.write(request);
-        printWriter.flush();
+        JsonNode jsonNode = null;
 
-        JsonNode jsonNode = getResponse();
-        closeSocketConnection();
+        try (Socket socket = getSocket(host, 443)) {
+
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
+            PrintWriter printWriter = new PrintWriter(outputStreamWriter);
+            String request = """
+                    GET %s HTTP/1.1
+                    Host: %s
+                    Connection: close
+                                        
+                    """.formatted(path, host);
+            printWriter.write(request);
+            printWriter.flush();
+
+            jsonNode = getResponse(socket);
+        }
 
         return jsonNode;
     }
 
     @SneakyThrows
     public static String sendRequestAndGetHeaders(String host, String path) {
-        Socket socket = getSocket(host, 443);
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
-        PrintWriter printWriter = new PrintWriter(outputStreamWriter);
-        String request = """
-                HEAD %s HTTP/1.1
-                Host: %s
-                Connection: close
-                                    
-                """.formatted(path, host);
-        printWriter.write(request);
-        printWriter.flush();
+        String firstHeadLine = "";
 
-        String firstHeadLine = getFirstHeadLine();
-        closeSocketConnection();
+        try (Socket socket = getSocket(host, 443)) {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
+            PrintWriter printWriter = new PrintWriter(outputStreamWriter);
+            String request = """
+                    HEAD %s HTTP/1.1
+                    Host: %s
+                    Connection: close
+                                        
+                    """.formatted(path, host);
+            printWriter.write(request);
+            printWriter.flush();
+
+            firstHeadLine = getFirstHeadLine(socket);
+        }
 
         return firstHeadLine;
     }
@@ -68,7 +72,7 @@ public class SocketUtil {
     }
 
     @SneakyThrows
-    private static String getFirstHeadLine() {
+    private static String getFirstHeadLine(Socket socket) {
         InputStream inputStream = socket.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -76,7 +80,7 @@ public class SocketUtil {
     }
 
     @SneakyThrows
-    private static JsonNode getResponse() {
+    private static JsonNode getResponse(Socket socket) {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = null;
 
@@ -90,10 +94,5 @@ public class SocketUtil {
         }
 
         return jsonNode;
-    }
-
-    @SneakyThrows
-    private static void closeSocketConnection() {
-        socket.close();
     }
 }
